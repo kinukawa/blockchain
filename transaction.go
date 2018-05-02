@@ -1,7 +1,7 @@
 package main
 
 type Transaction struct {
-	sender    string
-	recipient string
-	amount    int
+	Sender    string `json:"sender"`
+	Recipient string `json:"recipient"`
+	Amount    int    `json:"amount"`
 }

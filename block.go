@@ -7,11 +7,11 @@ import (
 )
 
 type Block struct {
-	index        int
-	timestamp    time.Time
-	transactions []Transaction
-	proof        int
-	previousHash []byte
+	Index        int
+	Timestamp    time.Time
+	Transactions []Transaction
+	Proof        int
+	PreviousHash []byte
 }
 
 func (b *Block) hash() []byte {

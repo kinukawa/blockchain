@@ -8,10 +8,10 @@ import (
 
 type Blockchain struct {
 	// empty list for store transactions
-	currentTrunsactions []Transaction
+	CurrentTrunsactions []Transaction
 
 	// first empty list for store blockchains
-	chain []*Block
+	Chain []*Block
 }
 
 func NewBlockchain() *Blockchain {
@@ -29,17 +29,17 @@ func (bc *Blockchain) createBlock(proof int, previousHash []byte) Block {
 	}
 
 	block := Block{
-		index:        len(bc.chain) + 1,
-		timestamp:    time.Now(),
-		transactions: bc.currentTrunsactions,
-		proof:        proof,
-		previousHash: prevHash,
+		Index:        len(bc.Chain) + 1,
+		Timestamp:    time.Now(),
+		Transactions: bc.CurrentTrunsactions,
+		Proof:        proof,
+		PreviousHash: prevHash,
 	}
 
 	// reset currentTransactions
-	bc.currentTrunsactions = []Transaction{}
+	bc.CurrentTrunsactions = []Transaction{}
 
-	bc.chain = append(bc.chain, &block)
+	bc.Chain = append(bc.Chain, &block)
 	return block
 }
 
@@ -48,20 +48,20 @@ func (bc *Blockchain) createTransaction(sender string, recipient string, amount 
 
 	// create transaction to add to next mined block
 	transaction := Transaction{
-		sender:    sender,
-		recipient: recipient,
-		amount:    amount,
+		Sender:    sender,
+		Recipient: recipient,
+		Amount:    amount,
 	}
 
-	bc.currentTrunsactions = append(bc.currentTrunsactions, transaction)
+	bc.CurrentTrunsactions = append(bc.CurrentTrunsactions, transaction)
 
 	// return address of the block contain this transaction
-	return bc.lastBlock().index + 1
+	return bc.lastBlock().Index + 1
 }
 
 // lastBlock is return a first block
 func (bc *Blockchain) lastBlock() *Block {
-	return bc.chain[len(bc.chain)-1]
+	return bc.Chain[len(bc.Chain)-1]
 }
 
 func (bc *Blockchain) proofOfWork(lastProof int) int {
