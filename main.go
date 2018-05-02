@@ -7,7 +7,16 @@ import (
 	"github.com/labstack/echo/middleware"
 )
 
+type resource struct {
+	blockchain *Blockchain
+}
+
 func main() {
+
+	resc := resource{
+		blockchain: NewBlockchain(),
+	}
+
 	// Echo instance
 	e := echo.New()
 
@@ -16,14 +25,14 @@ func main() {
 	e.Use(middleware.Recover())
 
 	// Routes
-	e.POST("/transactions/new", newTransaction)
+	e.POST("/transactions/new", resc.newTransaction)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":1234"))
 }
 
 // Handler
-func newTransaction(c echo.Context) error {
+func (resc resource) newTransaction(c echo.Context) error {
 	body := new(Transaction)
 	if err := c.Bind(body); err != nil {
 		return err
@@ -32,5 +41,14 @@ func newTransaction(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, body)
 	}
 
-	return c.JSON(http.StatusCreated, body)
+	// create a new transaction
+	index := resc.blockchain.createTransaction(body.Sender, body.Recipient, body.Amount)
+
+	resp := struct {
+		Index int `json:"index"`
+	}{
+		Index: index,
+	}
+
+	return c.JSON(http.StatusCreated, resp)
 }
