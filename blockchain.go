@@ -20,12 +20,18 @@ func NewBlockchain() *Blockchain {
 
 // createBlock create new block and add to chain
 func (bc *Blockchain) createBlock(proof int, previousHash []byte) Block {
+
+	prevHash := previousHash
+	if prevHash == nil {
+		prevHash = bc.lastBlock().hash()
+	}
+
 	block := Block{
 		index:        len(bc.chain) + 1,
 		timestamp:    time.Now(),
 		transactions: bc.currentTrunsactions,
 		proof:        proof,
-		previousHash: previousHash,
+		previousHash: prevHash,
 	}
 
 	// reset currentTransactions
