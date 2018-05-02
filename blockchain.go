@@ -8,7 +8,7 @@ import (
 
 type Blockchain struct {
 	// empty list for store transactions
-	CurrentTrunsactions []Transaction
+	CurrentTrunsactions []*Transaction
 
 	// first empty list for store blockchains
 	Chain []*Block
@@ -37,7 +37,7 @@ func (bc *Blockchain) createBlock(proof int, previousHash []byte) Block {
 	}
 
 	// reset currentTransactions
-	bc.CurrentTrunsactions = []Transaction{}
+	bc.CurrentTrunsactions = []*Transaction{}
 
 	bc.Chain = append(bc.Chain, &block)
 	return block
@@ -53,7 +53,7 @@ func (bc *Blockchain) createTransaction(sender string, recipient string, amount 
 		Amount:    amount,
 	}
 
-	bc.CurrentTrunsactions = append(bc.CurrentTrunsactions, transaction)
+	bc.CurrentTrunsactions = append(bc.CurrentTrunsactions, &transaction)
 
 	// return address of the block contain this transaction
 	return bc.lastBlock().Index + 1

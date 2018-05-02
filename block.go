@@ -9,7 +9,7 @@ import (
 type Block struct {
 	Index        int
 	Timestamp    time.Time
-	Transactions []Transaction
+	Transactions []*Transaction
 	Proof        int
 	PreviousHash []byte
 }

@@ -3,18 +3,23 @@ package main
 import (
 	"net/http"
 
+	"encoding/hex"
+
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
+	"github.com/satori/go.uuid"
 )
 
 type resource struct {
-	blockchain *Blockchain
+	blockchain     *Blockchain
+	nodeIdentifier string
 }
 
 func main() {
-
+	uuid := uuid.NewV4()
 	resc := resource{
-		blockchain: NewBlockchain(),
+		blockchain:     NewBlockchain(),
+		nodeIdentifier: hex.EncodeToString(uuid[:]),
 	}
 
 	// Echo instance
@@ -57,7 +62,37 @@ func (resc resource) postNewTransaction(c echo.Context) error {
 
 // getMine mine new block
 func (resc resource) getMine(c echo.Context) error {
-	return c.JSON(http.StatusOK, "mine new block")
+
+	// find next proof
+	lastBlock := resc.blockchain.lastBlock()
+	lastProof := lastBlock.Proof
+	proof := resc.blockchain.proofOfWork(lastProof)
+
+	//
+	resc.blockchain.createTransaction(
+		"0",
+		resc.nodeIdentifier,
+		1,
+	)
+
+	// mine new block by adding block to chain
+	block := resc.blockchain.createBlock(proof, nil)
+
+	resp := struct {
+		Message      string
+		Index        int
+		Transactions []*Transaction
+		Proof        int
+		PreviousHash []byte
+	}{
+		Message:      "mine a new block",
+		Index:        block.Index,
+		Transactions: block.Transactions,
+		Proof:        block.Proof,
+		PreviousHash: block.PreviousHash,
+	}
+
+	return c.JSON(http.StatusOK, resp)
 }
 
 // getChain return full blockchain
