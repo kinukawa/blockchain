@@ -1,6 +1,8 @@
 package main
 
 import (
+	"crypto/sha256"
+	"fmt"
 	"time"
 )
 
@@ -9,7 +11,7 @@ type Blockchain struct {
 	currentTrunsactions []Transaction
 
 	// first empty list for store blockchains
-	chain []Block
+	chain []*Block
 }
 
 func NewBlockchain() *Blockchain {
@@ -37,7 +39,7 @@ func (bc *Blockchain) createBlock(proof int, previousHash []byte) Block {
 	// reset currentTransactions
 	bc.currentTrunsactions = []Transaction{}
 
-	bc.chain = append(bc.chain, block)
+	bc.chain = append(bc.chain, &block)
 	return block
 }
 
@@ -58,6 +60,21 @@ func (bc *Blockchain) createTransaction(sender string, recipient string, amount 
 }
 
 // lastBlock is return a first block
-func (bc *Blockchain) lastBlock() Block {
+func (bc *Blockchain) lastBlock() *Block {
 	return bc.chain[len(bc.chain)-1]
+}
+
+func (bc *Blockchain) proofOfWork(lastProof int) int {
+	proof := 0
+	for !bc.validProof(lastProof, proof) {
+		proof += 1
+	}
+	return proof
+}
+
+// validProof valid proof
+func (bc *Blockchain) validProof(lastProof int, proof int) bool {
+	guess := fmt.Sprintf("%d%d", lastProof, proof)
+	guessHash := sha256.Sum256([]byte(guess))
+	return string(guessHash[:2]) == "12"
 }
