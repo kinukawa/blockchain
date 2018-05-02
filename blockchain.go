@@ -1,5 +1,9 @@
 package main
 
+import (
+	"time"
+)
+
 type Blockchain struct {
 	// empty list for store transactions
 	currentTrunsactions []Transaction
@@ -8,8 +12,27 @@ type Blockchain struct {
 	chain []Block
 }
 
+func NewBlockchain() *Blockchain {
+	bc := &Blockchain{}
+	bc.createBlock(100, []byte("1"))
+	return bc
+}
+
 // createBlock create new block and add to chain
-func (bc *Blockchain) createBlock(proof int, previousHash []byte) {
+func (bc *Blockchain) createBlock(proof int, previousHash []byte) Block {
+	block := Block{
+		index:        len(bc.chain) + 1,
+		timestamp:    time.Now(),
+		transactions: bc.currentTrunsactions,
+		proof:        proof,
+		previousHash: previousHash,
+	}
+
+	// reset currentTransactions
+	bc.currentTrunsactions = []Transaction{}
+
+	bc.chain = append(bc.chain, block)
+	return block
 }
 
 // createTransaction create new transaction and add to list
